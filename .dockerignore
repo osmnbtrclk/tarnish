@@ -1,0 +1,46 @@
+# Docker ignore file for Tarnish RSPS
+.git
+.gitignore
+.idea
+*.iml
+.vscode
+.DS_Store
+
+# Build outputs (will be built inside container)
+**/build/
+**/out/
+**/target/
+
+# Gradle cache
+.gradle/
+**/gradle/wrapper/gradle-wrapper.jar
+
+# IDE files
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Cache files that should be downloaded fresh
+game-server/data/cache/
+cache-tarnish-*.zip
+
+# Local development files
+docker-compose.override.yml
+.env.local
+
+# Documentation
+README.md
+docs/
+*.md

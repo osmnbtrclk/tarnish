@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  tarnish-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tarnish-server
+    ports:
+      - "43594:43594"  # Game server port
+      - "8080:8080"    # Web/admin port (if applicable)
+    volumes:
+      - ./game-server/data/cache:/app/game-server/data/cache
+      - ./game-server/data/content:/app/game-server/data/content
+      - ./game-server/settings.toml:/app/game-server/settings.toml
+    environment:
+      - JAVA_OPTS=-XX:-OmitStackTraceInFastThrow --enable-preview -XX:+UseZGC -Xmx4g -Xms2g -XX:MaxGCPauseMillis=100
+    restart: unless-stopped
+    networks:
+      - tarnish-network
+
+  # Optional: Database service (if you're using one)
+  database:
+    image: mysql:8.0
+    container_name: tarnish-db
+    environment:
+      MYSQL_ROOT_PASSWORD: tarnish_root_password
+      MYSQL_DATABASE: tarnish
+      MYSQL_USER: tarnish_user
+      MYSQL_PASSWORD: tarnish_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - tarnish-network
+    restart: unless-stopped
+
+  # Optional: PostgreSQL alternative
+  # postgres:
+  #   image: postgres:15
+  #   container_name: tarnish-postgres
+  #   environment:
+  #     POSTGRES_DB: tarnish
+  #     POSTGRES_USER: tarnish_user
+  #     POSTGRES_PASSWORD: tarnish_password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - tarnish-network
+  #   restart: unless-stopped
+
+networks:
+  tarnish-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  # postgres_data:
